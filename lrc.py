@@ -5,9 +5,11 @@ class lrc_game:
     isWinner = False
     curr_player_idx = -1
     winner_idx = -1
-    def __init__(self, chip_number, player_count):
+    oneToken = False
+    def __init__(self, chip_number, player_count, oneToken):
         self.players = [chip_number] * player_count
         self.chip_number = chip_number
+        self.oneToken = oneToken
 
     def __str__(self):
         return str(self.players)
@@ -21,7 +23,6 @@ class lrc_game:
         while( not self.isWinner):
             self.curr_player_idx = (self.curr_player_idx + 1) % len(self.players)
             self.take_turn()
-            self.check_winner()
         self.winner_idx = getWinnerIdx(self.players)
     
     def take_turn(self):
@@ -48,20 +49,27 @@ class lrc_game:
             # Right 
             self.players[(self.curr_player_idx + 1) % len(self.players)] += 1
             self.players[self.curr_player_idx] -= 1
+        self.check_winner()
     
     def check_winner(self):
-        if 1 == len(list(filter(lambda y: y > 0, self.players))):
-            self.isWinner = True
+        numPlayers = len(self.players)
+        if self.oneToken:
+            if self.players.count(0) == numPlayers - 1 and self.players.count(1) == 1:
+                self.isWinner = True
+        else:
+            if 1 == len(list(filter(lambda y: y > 0, self.players))):
+                self.isWinner = True
 
 def main():
-    chip_number = 3
-    player_count = 2
+    chip_number = 3 
+    player_count = 10
+    oneToken = True
+    num_iterations = 100000 
     print("hello")
 
     results = [0]*player_count
-    num_iterations = 100000
     for i in range(num_iterations):
-        game = lrc_game(chip_number, player_count)
+        game = lrc_game(chip_number, player_count, oneToken)
         game.start()
         results[game.winner_idx] += 1
     percentage = [0]* player_count
